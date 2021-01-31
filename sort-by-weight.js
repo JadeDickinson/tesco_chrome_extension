@@ -44,8 +44,8 @@ for (var k = 0; k < array.length; k++) {
   // As you go between pages, more product lists are added to it. So we only want to modify the one for the page we are on.
   // If we reached the second page without clicking through from the first, only the second page's items will be in the DOM.
   (
-    document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
-      document.getElementsByClassName('list-page-' + window.location.search.split('page=')[1])[0]?.children[0] ||
+    document.getElementsByClassName('list-page-' + window.location.search.split('page=')[1])[0]?.children[0] ||
+      document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
       document.getElementsByClassName('product-list')[0]
   ).appendChild(array[k])
 }
