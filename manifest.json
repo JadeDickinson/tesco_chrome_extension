@@ -10,11 +10,7 @@
     "persistent": false
   },
   "permissions": [
-    "activeTab",
-    "tabs",
-    "declarativeContent",
-    "storage",
-    "https://wwww.tesco.com/*"
+    "activeTab"
   ],
   "browser_action": {
     "default_icon": {
