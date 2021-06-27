@@ -1,6 +1,6 @@
 # tesco_chrome_extension
 
-Browser extension built to sort Tesco products by price/weight
+Browser extension built to sort Tesco products by price/weight or price/volume.
 
 Works in both Firefox and Chrome - despite the repository title 😄
 
