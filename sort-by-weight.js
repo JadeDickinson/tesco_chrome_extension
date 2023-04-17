@@ -6,27 +6,24 @@ if (typeof pricePerWeightElements != "undefined") {
 }
 array = []
 
+pricePerWeightClassName = 'beans-price__subtext'
+
 // Get all product list items including parent nodes (document.getElementsByClassName(product-list--list-item) only gets the parent list items, not the children including price by weight)
-pricePerWeightElements = document.getElementsByClassName('price-per-quantity-weight')
+pricePerWeightElements = document.getElementsByClassName('product-list--list-item')
 
 for (let i = 0; i < pricePerWeightElements.length; i++) {
-  if (
-    window.location.search.includes(document.getElementsByClassName('price-per-quantity-weight')[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.className.split('list-')[1].replace('-', '='))
-    || !window.location.search.includes('page=')
-  ) {
-    array.push(pricePerWeightElements[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
-  }
+  array.push(pricePerWeightElements[i]);
 }
 
 // Convert prices per 100g to per kg and per 100ml to per litre
 for (let j = 0; j < array.length; j++) {
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('100g')) {
+  if (array[j].getElementsByClassName(pricePerWeightClassName)[0].innerText.includes('100g')) {
     normaliseUnits(array[j], '/kg')
   }
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('100ml')) {
+  if (array[j].getElementsByClassName(pricePerWeightClassName)[0].innerText.includes('100ml')) {
     normaliseUnits(array[j], '/l')
   }
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('75cl')) {
+  if (array[j].getElementsByClassName(pricePerWeightClassName)[0].innerText.includes('75cl')) {
     normaliseUnits(array[j], '/l', 1.33333)
   }
   continue
@@ -35,7 +32,7 @@ for (let j = 0; j < array.length; j++) {
 // Sort array from lowest price/kg to highest price/kg
 array.sort(
   function (a, b) {
-    return parseFloat(a.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0]) - parseFloat(b.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0])
+    return parseFloat(a.getElementsByClassName(pricePerWeightClassName)[0].innerText.split('£')[1].split('/')[0]) - parseFloat(b.getElementsByClassName(pricePerWeightClassName)[0].innerText.split('£')[1].split('/')[0])
   }
 )
 
@@ -51,6 +48,6 @@ for (var k = 0; k < array.length; k++) {
 }
 
 function normaliseUnits(element, to, multiplier = 10) {
-  var a = parseFloat(element.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0])
-  element.getElementsByClassName('price-per-quantity-weight')[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
+  var a = parseFloat(element.getElementsByClassName(pricePerWeightClassName)[0].innerText.split('£')[1].split('/')[0])
+  element.getElementsByClassName(pricePerWeightClassName)[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
 }
