@@ -31,8 +31,14 @@ for (let j = 0; j < array.length; j++) {
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100g')) {
     normaliseUnits(array[j], '/kg')
   }
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10g')) {
+    normaliseUnits(array[j], '/kg', 100)
+  }
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100ml')) {
     normaliseUnits(array[j], '/l')
+  }
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10ml')) {
+    normaliseUnits(array[j], '/l', 100)
   }
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('75cl')) {
     normaliseUnits(array[j], '/l', 1.33333)
