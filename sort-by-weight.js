@@ -31,8 +31,14 @@ for (let j = 0; j < array.length; j++) {
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100g')) {
     normaliseUnits(array[j], '/kg')
   }
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10g')) {
+    normaliseUnits(array[j], '/kg', 100)
+  }
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100ml')) {
     normaliseUnits(array[j], '/l')
+  }
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10ml')) {
+    normaliseUnits(array[j], '/l', 100)
   }
   if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('75cl')) {
     normaliseUnits(array[j], '/l', 1.33333)
@@ -41,8 +47,8 @@ for (let j = 0; j < array.length; j++) {
 }
 
 for (let j = 0; j < array.length; j++) {
-  // If item contains a Clubcard price
-  if (array[j].querySelectorAll("[class^=offer-text]").length > 0) {
+  // If item contains a Clubcard price and that is just a straight £ value
+  if (array[j].querySelectorAll("[class^=offer-text]").length > 0 && array[j].querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
     // // Insert Clubcard price by weight
     originalPriceByWeight = array[j].querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
     originalPrice = array[j].querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
@@ -62,7 +68,7 @@ array.sort(
     aPrice = 0
     bPrice = 0
 
-    if (a.querySelectorAll("[class^=offer-text]").length > 0) {
+    if (a.querySelectorAll("[class^=offer-text]").length > 0 && a.querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
       originalPriceByWeight = a.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
       originalPrice = a.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
       clubcardPrice = a.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
@@ -71,7 +77,7 @@ array.sort(
       aPrice = parseFloat(a.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
     }
 
-    if (b.querySelectorAll("[class^=offer-text]").length > 0) {
+    if (b.querySelectorAll("[class^=offer-text]").length > 0 && b.querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
       originalPriceByWeight = b.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
       originalPrice = b.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
       clubcardPrice = b.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
