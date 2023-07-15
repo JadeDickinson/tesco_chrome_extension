@@ -56,14 +56,32 @@ for (let j = 0; j < array.length; j++) {
   }
 }
 
-// Sort array from lowest price/kg to highest price/kg
+// Sort array from lowest price/kg to highest price/kg - using Clubcard price by weight if present
 array.sort(
   function (a, b) {
-    return parseFloat(a.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0]) -
-      parseFloat(b.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
+    aPrice = 0
+    bPrice = 0
+
+    if (a.querySelectorAll("[class^=offer-text]").length > 0) {
+      originalPriceByWeight = a.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
+      originalPrice = a.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
+      clubcardPrice = a.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
+      aPrice = (originalPriceByWeight / originalPrice) * clubcardPrice
+    } else {
+      aPrice = parseFloat(a.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
+    }
+
+    if (b.querySelectorAll("[class^=offer-text]").length > 0) {
+      originalPriceByWeight = b.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
+      originalPrice = b.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
+      clubcardPrice = b.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
+      bPrice = (originalPriceByWeight / originalPrice) * clubcardPrice
+    } else {
+      bPrice = parseFloat(b.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
+    }
+    return aPrice - bPrice
   }
 )
-
 
 // Replace the list in the DOM with your sorted list
 for (var k = 0; k < array.length; k++) {
