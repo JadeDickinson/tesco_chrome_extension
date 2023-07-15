@@ -1,3 +1,9 @@
+
+function normaliseUnits(element, to, multiplier = 10) {
+  var a = parseFloat(element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
+  element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
+}
+
 if (typeof array != "undefined") {
   array = undefined;
 }
@@ -34,6 +40,22 @@ for (let j = 0; j < array.length; j++) {
   continue
 }
 
+for (let j = 0; j < array.length; j++) {
+  // If item contains a Clubcard price
+  if (array[j].querySelectorAll("[class^=offer-text]").length > 0) {
+    // // Insert Clubcard price by weight
+    originalPriceByWeight = array[j].querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
+    originalPrice = array[j].querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
+    clubcardPrice = array[j].querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
+
+    clubcardPriceByWeightNumber = (originalPriceByWeight / originalPrice) * clubcardPrice
+    clubcardPriceByWeight = `, £${clubcardPriceByWeightNumber.toFixed(2)}/kg`
+
+    clubcardOfferTextContainer = array[j].querySelectorAll("[class^=offer-text]")[0]
+    clubcardOfferTextContainer.innerText = clubcardOfferTextContainer.innerText + clubcardPriceByWeight
+  }
+}
+
 // Sort array from lowest price/kg to highest price/kg
 array.sort(
   function (a, b) {
@@ -41,6 +63,7 @@ array.sort(
       parseFloat(b.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
   }
 )
+
 
 // Replace the list in the DOM with your sorted list
 for (var k = 0; k < array.length; k++) {
@@ -51,9 +74,4 @@ for (var k = 0; k < array.length; k++) {
     document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
     document.getElementsByClassName('product-list')[0]
   ).appendChild(array[k])
-}
-
-function normaliseUnits(element, to, multiplier = 10) {
-  var a = parseFloat(element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
-  element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
 }
