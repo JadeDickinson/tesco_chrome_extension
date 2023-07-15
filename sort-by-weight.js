@@ -7,26 +7,28 @@ if (typeof pricePerWeightElements != "undefined") {
 array = []
 
 // Get all product list items including parent nodes (document.getElementsByClassName(product-list--list-item) only gets the parent list items, not the children including price by weight)
-pricePerWeightElements = document.getElementsByClassName('price-per-quantity-weight')
 
+pricePerWeightElements = document.getElementsByClassName('product-list--list-item')
+
+// Only sort in-stock elements (out of stock elements do not have prices listed)
 for (let i = 0; i < pricePerWeightElements.length; i++) {
   if (
-    window.location.search.includes(document.getElementsByClassName('price-per-quantity-weight')[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.className.split('list-')[1].replace('-', '='))
-    || !window.location.search.includes('page=')
+    pricePerWeightElements[i].querySelectorAll("[class^=styled__StyledFootnote]").length > 0 &&
+    pricePerWeightElements[i].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('£')
   ) {
-    array.push(pricePerWeightElements[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
+    array.push(pricePerWeightElements[i]);
   }
 }
 
 // Convert prices per 100g to per kg and per 100ml to per litre
 for (let j = 0; j < array.length; j++) {
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('100g')) {
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100g')) {
     normaliseUnits(array[j], '/kg')
   }
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('100ml')) {
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100ml')) {
     normaliseUnits(array[j], '/l')
   }
-  if (array[j].getElementsByClassName('price-per-quantity-weight')[0].innerText.includes('75cl')) {
+  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('75cl')) {
     normaliseUnits(array[j], '/l', 1.33333)
   }
   continue
@@ -35,7 +37,8 @@ for (let j = 0; j < array.length; j++) {
 // Sort array from lowest price/kg to highest price/kg
 array.sort(
   function (a, b) {
-    return parseFloat(a.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0]) - parseFloat(b.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0])
+    return parseFloat(a.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0]) -
+      parseFloat(b.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
   }
 )
 
@@ -45,12 +48,12 @@ for (var k = 0; k < array.length; k++) {
   // If we reached the second page without clicking through from the first, only the second page's items will be in the DOM.
   (
     document.getElementsByClassName('list-page-' + window.location.search.split('page=')[1])[0]?.children[0] ||
-      document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
-      document.getElementsByClassName('product-list')[0]
+    document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
+    document.getElementsByClassName('product-list')[0]
   ).appendChild(array[k])
 }
 
 function normaliseUnits(element, to, multiplier = 10) {
-  var a = parseFloat(element.getElementsByClassName('price-per-quantity-weight')[0].innerText.split('£')[1].split('/')[0])
-  element.getElementsByClassName('price-per-quantity-weight')[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
+  var a = parseFloat(element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
+  element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
 }
