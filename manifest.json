@@ -1,8 +1,8 @@
 {
   "name": "Sort Tesco products by price/weight",
-  "version": "1.0",
+  "version": "2.0",
   "author": "Jade Dickinson",
-  "description": "Allows sorting of Tesco groceries by price/weight",
+  "description": "Allows sorting of Tesco groceries by price/weight including Clubcard prices",
   "background": {
     "scripts": [
       "background.js"
