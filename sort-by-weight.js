@@ -50,12 +50,15 @@ for (let j = 0; j < array.length; j++) {
   // If item contains a Clubcard price and that is just a straight £ value
   if (array[j].querySelectorAll("[class^=offer-text]").length > 0 && array[j].querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
     // // Insert Clubcard price by weight
-    originalPriceByWeight = array[j].querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
+    originalPriceByWeightWithUnit = array[j].querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')
+    originalPriceByWeight = originalPriceByWeightWithUnit[0]
+    unit = originalPriceByWeightWithUnit[1]
+
     originalPrice = array[j].querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
     clubcardPrice = array[j].querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
 
     clubcardPriceByWeightNumber = (originalPriceByWeight / originalPrice) * clubcardPrice
-    clubcardPriceByWeight = `, £${clubcardPriceByWeightNumber.toFixed(2)}/kg`
+    clubcardPriceByWeight = `, £${clubcardPriceByWeightNumber.toFixed(2)}/${unit}`
 
     clubcardOfferTextContainer = array[j].querySelectorAll("[class^=offer-text]")[0]
     clubcardOfferTextContainer.innerText = clubcardOfferTextContainer.innerText + clubcardPriceByWeight
