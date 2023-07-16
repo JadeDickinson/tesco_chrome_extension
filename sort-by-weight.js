@@ -1,7 +1,8 @@
+var pricePerUnitCSSClass = "[class*=price__subtext]"
 
 function normaliseUnits(element, to, multiplier = 10) {
-  var a = parseFloat(element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
-  element.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
+  var a = parseFloat(element.querySelectorAll(pricePerUnitCSSClass)[0].innerText.split('£')[1].split('/')[0])
+  element.querySelectorAll(pricePerUnitCSSClass)[0].innerText = '£' + (a * multiplier).toFixed(2).toString() + to
 }
 
 if (typeof array != "undefined") {
@@ -10,56 +11,49 @@ if (typeof array != "undefined") {
 if (typeof pricePerWeightElements != "undefined") {
   pricePerWeightElements = undefined;
 }
-array = []
 
 // Get all product list items including parent nodes (document.getElementsByClassName(product-list--list-item) only gets the parent list items, not the children including price by weight)
-
-pricePerWeightElements = document.getElementsByClassName('product-list--list-item')
+pricePerWeightElements = document.getElementById('list-content').childNodes
 
 // Only sort in-stock elements (out of stock elements do not have prices listed)
-for (let i = 0; i < pricePerWeightElements.length; i++) {
+array = []
+var priceCSSClass = "[class*=priceText]"
+for (var i = 0; i < pricePerWeightElements.length; i++) {
   if (
-    pricePerWeightElements[i].querySelectorAll("[class^=styled__StyledFootnote]").length > 0 &&
-    pricePerWeightElements[i].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('£')
+    // priceText
+    pricePerWeightElements[i].querySelectorAll(priceCSSClass).length > 0 &&
+    pricePerWeightElements[i].querySelectorAll(priceCSSClass)[0].innerText.includes('£')
   ) {
     array.push(pricePerWeightElements[i]);
   }
 }
 
+var clubcardPricePerUnitCSSClass = "[class*=value-bar__content-subtext]"
+
 // Convert prices per 100g to per kg and per 100ml to per litre
-for (let j = 0; j < array.length; j++) {
-  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100g')) {
+for (var j = 0; j < array.length; j++) {
+  var selector = (array[j].querySelectorAll(clubcardPricePerUnitCSSClass).length > 0) ? clubcardPricePerUnitCSSClass : pricePerUnitCSSClass
+  if (array[j].querySelectorAll(selector)[0].innerText.includes('100g')) {
+    var otherUnitsExist = true
     normaliseUnits(array[j], '/kg')
   }
-  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10g')) {
+  if (array[j].querySelectorAll(selector)[0].innerText.includes('10g')) {
+    var otherUnitsExist = true
     normaliseUnits(array[j], '/kg', 100)
   }
-  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('100ml')) {
+  if (array[j].querySelectorAll(selector)[0].innerText.includes('100ml')) {
+    var otherUnitsExist = true
     normaliseUnits(array[j], '/l')
   }
-  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('10ml')) {
+  if (array[j].querySelectorAll(selector)[0].innerText.includes('10ml')) {
+    var otherUnitsExist = true
     normaliseUnits(array[j], '/l', 100)
   }
-  if (array[j].querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.includes('75cl')) {
+  if (array[j].querySelectorAll(selector)[0].innerText.includes('75cl')) {
+    var otherUnitsExist = true
     normaliseUnits(array[j], '/l', 1.33333)
   }
   continue
-}
-
-for (let j = 0; j < array.length; j++) {
-  // If item contains a Clubcard price and that is just a straight £ value
-  if (array[j].querySelectorAll("[class^=offer-text]").length > 0 && array[j].querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
-    // // Insert Clubcard price by weight
-    originalPriceByWeight = array[j].querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
-    originalPrice = array[j].querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
-    clubcardPrice = array[j].querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
-
-    clubcardPriceByWeightNumber = (originalPriceByWeight / originalPrice) * clubcardPrice
-    clubcardPriceByWeight = `, £${clubcardPriceByWeightNumber.toFixed(2)}/kg`
-
-    clubcardOfferTextContainer = array[j].querySelectorAll("[class^=offer-text]")[0]
-    clubcardOfferTextContainer.innerText = clubcardOfferTextContainer.innerText + clubcardPriceByWeight
-  }
 }
 
 // Sort array from lowest price/kg to highest price/kg - using Clubcard price by weight if present
@@ -67,35 +61,27 @@ array.sort(
   function (a, b) {
     aPrice = 0
     bPrice = 0
+    
+    aSelector = a.querySelectorAll(clubcardPricePerUnitCSSClass).length > 0 ? clubcardPricePerUnitCSSClass : pricePerUnitCSSClass
+    aPrice = parseFloat(a.querySelectorAll(aSelector)[0].innerText.split('£')[1].split('/')[0])
 
-    if (a.querySelectorAll("[class^=offer-text]").length > 0 && a.querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
-      originalPriceByWeight = a.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
-      originalPrice = a.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
-      clubcardPrice = a.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
-      aPrice = (originalPriceByWeight / originalPrice) * clubcardPrice
-    } else {
-      aPrice = parseFloat(a.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
-    }
+    bSelector = b.querySelectorAll(clubcardPricePerUnitCSSClass).length > 0 ? clubcardPricePerUnitCSSClass : pricePerUnitCSSClass
+    bPrice = parseFloat(b.querySelectorAll(bSelector)[0].innerText.split('£')[1].split('/')[0])
 
-    if (b.querySelectorAll("[class^=offer-text]").length > 0 && b.querySelectorAll("[class^=offer-text]")[0].innerText.startsWith("£")) {
-      originalPriceByWeight = b.querySelectorAll("[class$=beans-price__subtext]")[0].innerText.split('£')[1].split('/')[0]
-      originalPrice = b.querySelectorAll("[class^=styled__StyledHeading]")[0].innerText.split('£')[1]
-      clubcardPrice = b.querySelectorAll("[class^=offer-text]")[0].innerText.split('£')[1].split(' Clubcard Price')[0]
-      bPrice = (originalPriceByWeight / originalPrice) * clubcardPrice
-    } else {
-      bPrice = parseFloat(b.querySelectorAll("[class^=styled__StyledFootnote]")[0].innerText.split('£')[1].split('/')[0])
-    }
     return aPrice - bPrice
   }
 )
 
+// insert out-of-stock items to start of array. Must be after sort or sort will fail
+for (var i = 0; i < pricePerWeightElements.length; i++) {
+  if (
+    !(pricePerWeightElements[i].querySelectorAll(priceCSSClass).length > 0)
+  ) {
+    array.unshift(pricePerWeightElements[i]);
+  }
+}
+
 // Replace the list in the DOM with your sorted list
 for (var k = 0; k < array.length; k++) {
-  // As you go between pages, more product lists are added to it. So we only want to modify the one for the page we are on.
-  // If we reached the second page without clicking through from the first, only the second page's items will be in the DOM.
-  (
-    document.getElementsByClassName('list-page-' + window.location.search.split('page=')[1])[0]?.children[0] ||
-    document.getElementsByClassName('product-list')[parseInt(window.location.search.split('page=')[1]) - 1] ||
-    document.getElementsByClassName('product-list')[0]
-  ).appendChild(array[k])
+  (document.getElementById('list-content')).appendChild(array[k])
 }
